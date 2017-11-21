@@ -12,10 +12,10 @@ public:
 	virtual ~Quicksort() { }
 
 	/**
-	 * Ordination by quicksort algorithm
+	 * Sorting by quicksort algorithm
 	 * @param vector The vector to be sorted
-	 * @param size The vector's size
-	 * @return The time interval in milliseconds to sort the vector
+	 * @param size The vector size
+	 * @return The time interval taken in milliseconds for sorting the vector
 	 */
 	static double sort(T *vector, long int size) {
 		timeval begin = getCurrentTime();
@@ -26,7 +26,7 @@ public:
 
 private:
 	/**
-	 * Ordination by quicksort algorithm
+	 * Sorting by quicksort algorithm
 	 * @param vector The vector to be sorted
 	 * @param lowerLimit The lower limit
 	 * @param upperLimit The upper limit
@@ -52,7 +52,7 @@ private:
 			}
 		}
 
-		/* Ordination of remaining parts */
+		/* Sorting of remaining parts */
 		if(upper > lowerLimit)
 			quicksort(vector, lowerLimit, upper);
 		if(lower < upperLimit)
@@ -60,7 +60,7 @@ private:
 	}
 
 	/**
-	 * Get the time interval in milliseconds between two points
+	 * Get the time interval in milliseconds between two timestamps
 	 * @param begin The beginning time
 	 * @param end The ending time
 	 * @return The time interval in milliseconds
@@ -76,8 +76,8 @@ private:
 	}
 
 	/**
-	 * Get the current time
-	 * @return The current time
+	 * Get current time
+	 * @return Current time
 	 */
 	static timeval getCurrentTime() {
 		timeval time;

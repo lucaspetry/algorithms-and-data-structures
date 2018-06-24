@@ -52,5 +52,5 @@ edges = [
 graph = Graph(vertices, edges, directed = False)
 print(graph.get_minimum_spanning_tree())
 
-graph2 = get_random_connected_graph(1000, 50000)
+graph2 = get_random_connected_graph(100, 300)
 print(graph2.get_minimum_spanning_tree())

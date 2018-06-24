@@ -93,39 +93,23 @@ class Graph(object):
         selected = []
 
         # Build the minimum spanning tree
-        components = {v : None for v in self._vertices}
-        cCount = 0
-        vCount = len(self._vertices)
-        covered = set()
+        components = {v : set([v]) for v in self._vertices}
+        count = len(self._vertices)
 
-        while len(covered) != vCount or cCount != 1:
+        while count > 1:
             edge = edges.pop(0)
             v1 = edge[0]
             v2 = edge[1]
 
-            if v1 not in covered or v2 not in covered:
-                covered = covered.union([v1, v2])
+            if components[v1] != components[v2]:
                 selected.append(edge)
-                components, cCount = self.update_components(v1, v2, components, cCount)
-            elif components[v1] != components[v2]:
-                selected.append(edge)
-                components, cCount = self.update_components(v1, v2, components, cCount)
+                components, count = self.update_components(v1, v2, components, count)
 
         return selected
 
     def update_components(self, v1, v2, components, count):
-        newSet = None
-
-        if components[v1] == None and components[v2] != None:
-            newSet = components[v2].union([v1])
-        elif components[v1] != None and components[v2] == None:
-            newSet = components[v1].union([v2])
-        elif components[v1] == None and components[v2] == None:
-            count += 1
-            newSet = set([v1, v2])
-        else:
-            newSet = components[v1].union(components[v2])
-            count -= 1
+        newSet = components[v1].union(components[v2])
+        count -= 1
 
         for v in newSet:
             components[v] = newSet

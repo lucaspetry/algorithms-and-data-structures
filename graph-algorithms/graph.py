@@ -34,7 +34,7 @@ class Graph(object):
         idx1 = self._vertices.index(v1)
         idx2 = self._vertices.index(v2)
 
-        return True if self._edges[idx1][idx2] == 1 else False
+        return True if self._edges[idx1][idx2] > 0 else False
 
     # Get all source vertices, i.e., vertices with no incoming edges
     def get_source_vertices(self):
@@ -42,7 +42,7 @@ class Graph(object):
 
         for row in range(0, len(self._edges)):
             for col in range(0, len(self._edges[row])):
-                if self._edges[row][col] == 1:
+                if self._edges[row][col] > 0:
                     source[col] = False
 
         return [v for v, s in zip(self._vertices, source) if s]
@@ -70,7 +70,7 @@ class Graph(object):
         for col in range(0, len(self._vertices)):
             v2 = self._vertices[col]
             allVisited = set().union(nowVisited, visited, v)
-            if self._edges[idxV][col] == 1 and v2 not in allVisited:
+            if self._edges[idxV][col] > 0 and v2 not in allVisited:
                 newVisited = self.dfs_visit(v2, allVisited)
                 newVisited.extend(nowVisited)
                 nowVisited = newVisited
@@ -79,6 +79,55 @@ class Graph(object):
         newVisited.extend(nowVisited)
         return newVisited
     
-    # Minimum spanning tree of the graph via 
+    # Minimum spanning tree of the graph via Kruskal's algorithm
     def get_minimum_spanning_tree(self):
-        return None # TO-DO
+        edges = []
+
+        # Get edges and sort them
+        for row in range(0, len(self._vertices)):
+            for col in range(row + 1, len(self._vertices)):
+                if self._edges[row][col] > 0:
+                    edges.append((self._vertices[row], self._vertices[col], self._edges[row][col]))
+
+        edges = sorted(edges, key = lambda edge : edge[2])
+        selected = []
+
+        # Build the minimum spanning tree
+        components = {v : None for v in self._vertices}
+        cCount = 0
+        vCount = len(self._vertices)
+        covered = set()
+
+        while len(covered) != vCount or cCount != 1:
+            edge = edges.pop(0)
+            v1 = edge[0]
+            v2 = edge[1]
+
+            if v1 not in covered or v2 not in covered:
+                covered = covered.union([v1, v2])
+                selected.append(edge)
+                components, cCount = self.update_components(v1, v2, components, cCount)
+            elif components[v1] != components[v2]:
+                selected.append(edge)
+                components, cCount = self.update_components(v1, v2, components, cCount)
+
+        return selected
+
+    def update_components(self, v1, v2, components, count):
+        newSet = None
+
+        if components[v1] == None and components[v2] != None:
+            newSet = components[v2].union([v1])
+        elif components[v1] != None and components[v2] == None:
+            newSet = components[v1].union([v2])
+        elif components[v1] == None and components[v2] == None:
+            count += 1
+            newSet = set([v1, v2])
+        else:
+            newSet = components[v1].union(components[v2])
+            count -= 1
+
+        for v in newSet:
+            components[v] = newSet
+
+        return components, count

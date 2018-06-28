@@ -14,10 +14,10 @@ data <- read.csv(inputFile, header = TRUE)
 plot <- ggplot(data, aes(x = edges, y = time)) + 
     geom_line() +
     geom_point(size = 2) +
-    scale_x_continuous(breaks = seq(0, 100000, 10000)) +
+    #scale_x_continuous(breaks = seq(0, 100000, 10000)) +
     #scale_y_continuous(breaks = seq(0, 1, 0.1)) +
     xlab("Número de arestas") +
     ylab("Tempo (ms)") +
     theme_bw()
 
-ggsave("plot.pdf", plot, device = pdf(), width = 6, height = 4, unit = "in")
+ggsave(paste0(inputFile, ".pdf"), plot, device = pdf(), width = 6, height = 4, unit = "in")

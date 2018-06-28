@@ -1,3 +1,4 @@
+from set_utils import SetManager
 
 class Graph(object):
 
@@ -80,7 +81,7 @@ class Graph(object):
         return newVisited
     
     # Minimum spanning tree of the graph via Kruskal's algorithm
-    def get_minimum_spanning_tree(self):
+    def get_spanning_tree(self, min = True):
         edges = []
 
         # Get edges and sort them
@@ -89,29 +90,51 @@ class Graph(object):
                 if self._edges[row][col] > 0:
                     edges.append((self._vertices[row], self._vertices[col], self._edges[row][col]))
 
-        edges = sorted(edges, key = lambda edge : edge[2])
+        edges = sorted(edges, key = lambda edge : edge[2] if min else -edge[2])
         selected = []
+        setMngr = SetManager()
+
+        for v in self._vertices:
+            setMngr.make_set(v)
 
         # Build the minimum spanning tree
-        components = {v : set([v]) for v in self._vertices}
-        count = len(self._vertices)
-
-        while count > 1:
+        while setMngr.get_count() > 1:
             edge = edges.pop(0)
             v1 = edge[0]
             v2 = edge[1]
 
-            if components[v1] != components[v2]:
+            if setMngr.find_set(v1) != setMngr.find_set(v2):
                 selected.append(edge)
-                components, count = self.update_components(v1, v2, components, count)
+                setMngr.union(v1, v2)
 
         return selected
 
-    def update_components(self, v1, v2, components, count):
-        newSet = components[v1].union(components[v2])
-        count -= 1
+    def get_signal_tree(self):
+        edges = []
 
-        for v in newSet:
-            components[v] = newSet
+        # Get edges and sort them
+        for row in range(0, len(self._vertices)):
+            for col in range(row + 1, len(self._vertices)):
+                if self._edges[row][col] > 0:
+                    edges.append((self._vertices[row], self._vertices[col], self._edges[row][col]))
 
-        return components, count
+        # Sort by weights decreasing
+        edges = sorted(edges, key = lambda edge : -edge[2])
+        selected = []
+        setMngr = SetManager()
+
+        for v in self._vertices:
+            setMngr.make_set(v)
+
+        # Build the maximum spanning tree
+        while setMngr.get_count() > 1:
+            edge = edges.pop(0)
+            v1 = edge[0]
+            v2 = edge[1]
+
+            if setMngr.find_set(v1) != setMngr.find_set(v2):
+                selected.append(edge)
+                setMngr.union(v1, v2)
+
+        # Get the generated tree
+        return setMngr.get_generated_tree()

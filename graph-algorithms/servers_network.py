@@ -1,5 +1,8 @@
-from graph import Graph
 import random
+import time
+from subprocess import call
+import csv
+from graph import Graph
 
 def get_random_connected_graph(vertexCount, edgeCount):
 	if edgeCount < vertexCount - 1:
@@ -52,5 +55,26 @@ edges = [
 graph = Graph(vertices, edges, directed = False)
 print(graph.get_minimum_spanning_tree())
 
-graph2 = get_random_connected_graph(100, 300)
-print(graph2.get_minimum_spanning_tree())
+times = []
+random.seed(100)
+v = 5000
+e = 5000
+
+while e <= 100000:
+	graph = get_random_connected_graph(v, e)
+	start = time.time()
+	graph.get_minimum_spanning_tree()
+	elapsed = ((time.time() - start) * 1000) // 1
+	print("Graph with |V| = " + str(v) + " and |E| = " + str(e) + " :: Elapsed = " + str(elapsed) + " ms")
+	times.append([e, elapsed])
+	e += 5000
+
+with open('graph_kruskal_data.csv', 'w') as csvfile:
+	writer = csv.writer(csvfile, delimiter=',')
+	writer.writerow(['edges', 'time'])
+
+	for time in times:
+		writer.writerow(time)
+
+print("Plotting graph to plot.pdf")
+call(["Rscript", "graph_kruskal_time_plot.R", "graph_kruskal_data.csv"])
